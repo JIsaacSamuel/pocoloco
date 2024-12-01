@@ -33,12 +33,21 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up":
 			if m.hover > 0 {
 				m.hover--
+			} else {
+				m.hover = len(m.table) - 1
 			}
 
 		case "down":
 			if m.hover < len(m.table)-1 {
 				m.hover++
+			} else {
+				m.hover = 0
 			}
+
+		case "ctrl+z":
+			helpers.Go_to("..")
+			m.table = nav.Get_dirs()
+			m.hover = 0
 
 		case "enter":
 			if m.hover == 0 {
