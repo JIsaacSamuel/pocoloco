@@ -64,6 +64,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.hover = 1
 				}
 			}
+
+		case "ctrl+s":
+			helpers.Start_coding()
 		}
 	}
 	return m, nil
