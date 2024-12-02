@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
@@ -39,4 +40,15 @@ func Open_nano(file_name string) {
 	}
 
 	return
+}
+
+func Filer_files(list []fs.DirEntry, param string) []fs.DirEntry {
+	var result []fs.DirEntry
+	for i := 0; i < len(list); i++ {
+		if param == list[i].Name()[:min(len(param), len(list[i].Name()))] {
+			result = append(result, list[i])
+		}
+	}
+
+	return result
 }

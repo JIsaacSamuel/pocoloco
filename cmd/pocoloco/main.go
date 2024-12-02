@@ -12,13 +12,18 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+var searchQueryStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("99"))
+
+var textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("231"))
+
 var baseStyle = lipgloss.NewStyle().
 	Bold(true).
-	Foreground(lipgloss.Color("99"))
+	Foreground(lipgloss.Color("46"))
 
 type model struct {
-	hover int
-	table []fs.DirEntry
+	hover        int
+	table        []fs.DirEntry
+	search_query string
 }
 
 func (m model) Init() tea.Cmd { return nil }
@@ -28,7 +33,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		switch msg.String() {
-		case "ctrl+c", "q":
+		case "ctrl+c", "esc":
+			m.Update(tea.ClearScreen())
 			return m, tea.Quit
 
 		case "up":
@@ -45,13 +51,20 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.hover = 0
 			}
 
+		case "backspace":
+			m.search_query = m.search_query[0 : len(m.search_query)-1]
+
 		case "ctrl+z":
+			m.Update(tea.ClearScreen())
 			helpers.Go_to("..")
 			m.table = nav.Get_dirs()
 			m.hover = 0
+			m.search_query = ""
 
 		case "enter":
 			if m.hover >= 0 {
+				m.search_query = ""
+
 				if m.table[m.hover].IsDir() == false {
 					helpers.Open_nano(m.table[m.hover].Name())
 					return m, tea.ClearScreen
@@ -71,39 +84,53 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "ctrl+s":
 			helpers.Start_coding()
+
+		default:
+			m.search_query += msg.String()
+			m.table = helpers.Filer_files(m.table, m.search_query)
+			m.hover = 0
 		}
 	}
 	return m, nil
 }
 
 func (m model) View() string {
-	s := header.Get_header()
-	var fname string
+	head := header.Get_header()
+
+	searchBar := searchQueryStyle.Render(m.search_query)
+	searchBar += "\n"
+
+	var s string
+	pointer := ""
+	style := textStyle
 
 	if len(m.table) == 0 {
-		return fmt.Sprintf("%s %s\n", "!!", "This directory is empty.")
+		s += fmt.Sprintf("%s %s\n", "!!", "This directory is empty.")
 	}
 
 	for i := 0; i < len(m.table); i++ {
 		if i == m.hover {
+			style = baseStyle
 			if m.table[i].IsDir() == false {
-				fname = fmt.Sprintf("%s %s\n", "x", baseStyle.Render(m.table[i].Name()))
+				pointer = "x"
 			} else {
-				fname = fmt.Sprintf("%s %s\n", ">", baseStyle.Render(m.table[i].Name()))
+				pointer = ">"
 			}
 		} else {
-			fname = fmt.Sprintf("%s %s\n", " ", m.table[i].Name())
+			pointer = " "
+			style = textStyle
 		}
-		s += fname
+		s += fmt.Sprintf("%s %s\n", pointer, style.Render(m.table[i].Name()))
 	}
 
-	return s
+	return head + searchBar + s
 }
 
 func initialModel() *model {
 	return &model{
-		hover: 0,
-		table: nav.Get_dirs(),
+		hover:        0,
+		table:        nav.Get_dirs(),
+		search_query: "",
 	}
 }
 
