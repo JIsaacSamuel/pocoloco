@@ -54,6 +54,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			if m.hover >= 0 {
+				if m.table[m.hover].IsDir() == false {
+					helpers.Open_nano(m.table[m.hover].Name())
+					return m, nil
+				}
+
 				helpers.Go_to(m.table[m.hover].Name())
 				m.table = nav.Get_dirs()
 			} else {
@@ -84,7 +89,11 @@ func (m model) View() string {
 
 	for i := 0; i < len(m.table); i++ {
 		if i == m.hover {
-			fname = fmt.Sprintf("%s %s\n", ">", baseStyle.Render(m.table[i].Name()))
+			if m.table[i].IsDir() == false {
+				fname = fmt.Sprintf("%s %s\n", "x", baseStyle.Render(m.table[i].Name()))
+			} else {
+				fname = fmt.Sprintf("%s %s\n", ">", baseStyle.Render(m.table[i].Name()))
+			}
 		} else {
 			fname = fmt.Sprintf("%s %s\n", " ", m.table[i].Name())
 		}

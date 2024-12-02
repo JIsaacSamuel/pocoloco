@@ -25,3 +25,18 @@ func Start_coding() {
 
 	return
 }
+
+func Open_nano(file_name string) {
+	cmd := exec.Command("nano", file_name)
+
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return
+}
