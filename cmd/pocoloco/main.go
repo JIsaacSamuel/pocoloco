@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 
 	"github.com/JIsaacSamuel/pocoloco/internal/header"
@@ -16,8 +17,9 @@ var baseStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("99"))
 
 type model struct {
-	hover int
-	table []string
+	hover   int
+	table   []fs.DirEntry
+	isEmpty bool
 }
 
 func (m model) Init() tea.Cmd { return nil }
@@ -48,10 +50,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			helpers.Go_to("..")
 			m.table = nav.Get_dirs()
 			m.hover = 0
+			m.isEmpty = false
 
 		case "enter":
 			if m.hover >= 0 {
-				helpers.Go_to(m.table[m.hover])
+				helpers.Go_to(m.table[m.hover].Name())
 				m.table = nav.Get_dirs()
 			} else {
 				return m, nil
@@ -60,7 +63,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if len(m.table) > 0 {
 				m.hover = 0
 			} else {
-				m.table = append(m.table, "No files here")
+				m.isEmpty = true
 				m.hover = -1
 			}
 
@@ -74,11 +77,16 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	s := header.Get_header()
 	var fname string
+
+	if m.isEmpty {
+		return fmt.Sprintf("%s %s\n", ">", baseStyle.Render("This directory is empty."))
+	}
+
 	for i := 0; i < len(m.table); i++ {
 		if i == m.hover {
-			fname = fmt.Sprintf("%s %s\n", ">", baseStyle.Render(m.table[i]))
+			fname = fmt.Sprintf("%s %s\n", ">", baseStyle.Render(m.table[i].Name()))
 		} else {
-			fname = fmt.Sprintf("%s %s\n", " ", m.table[i])
+			fname = fmt.Sprintf("%s %s\n", " ", m.table[i].Name())
 		}
 		s += fname
 	}
