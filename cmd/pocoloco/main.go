@@ -17,9 +17,8 @@ var baseStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("99"))
 
 type model struct {
-	hover   int
-	table   []fs.DirEntry
-	isEmpty bool
+	hover int
+	table []fs.DirEntry
 }
 
 func (m model) Init() tea.Cmd { return nil }
@@ -50,13 +49,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			helpers.Go_to("..")
 			m.table = nav.Get_dirs()
 			m.hover = 0
-			m.isEmpty = false
 
 		case "enter":
 			if m.hover >= 0 {
 				if m.table[m.hover].IsDir() == false {
 					helpers.Open_nano(m.table[m.hover].Name())
-					return m, nil
+					return m, tea.ClearScreen
 				}
 
 				helpers.Go_to(m.table[m.hover].Name())
@@ -68,7 +66,6 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if len(m.table) > 0 {
 				m.hover = 0
 			} else {
-				m.isEmpty = true
 				m.hover = -1
 			}
 
@@ -83,8 +80,8 @@ func (m model) View() string {
 	s := header.Get_header()
 	var fname string
 
-	if m.isEmpty {
-		return fmt.Sprintf("%s %s\n", ">", baseStyle.Render("This directory is empty."))
+	if len(m.table) == 0 {
+		return fmt.Sprintf("%s %s\n", "!!", "This directory is empty.")
 	}
 
 	for i := 0; i < len(m.table); i++ {
