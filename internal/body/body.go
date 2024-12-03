@@ -7,16 +7,20 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("231"))
+var (
+	textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("231"))
 
-var baseStyle = lipgloss.NewStyle().
-	Bold(true).
-	Foreground(lipgloss.Color("46"))
+	baseStyle = lipgloss.NewStyle().
+			Bold(true).
+			Foreground(lipgloss.Color("46"))
+)
 
 func Body(table []fs.DirEntry, hover, index int) string {
 	var s string
+	var prefix string
+	var suffix string
+	var style lipgloss.Style
 	pointer := ""
-	style := textStyle
 
 	if len(table) == 0 {
 		s += fmt.Sprintf("%s %s\n", "!!", "This directory is empty.")
@@ -29,7 +33,7 @@ func Body(table []fs.DirEntry, hover, index int) string {
 	for i := index; i < min(index+10, len(table)); i++ {
 		if i == hover {
 			style = baseStyle
-			if table[i].IsDir() == false {
+			if !table[i].IsDir() {
 				pointer = "x"
 			} else {
 				pointer = ">"
@@ -41,5 +45,17 @@ func Body(table []fs.DirEntry, hover, index int) string {
 		s += fmt.Sprintf("%s %s\n", pointer, style.Render(table[i].Name()))
 	}
 
-	return s
+	if index == 0 {
+		prefix = "-- Top --\n"
+	} else {
+		prefix = "...\n"
+	}
+
+	if index+9 == len(table)-1 {
+		suffix = "-- End --"
+	} else {
+		suffix = "..."
+	}
+
+	return prefix + s + suffix
 }
