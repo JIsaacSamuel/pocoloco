@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 
+	"github.com/JIsaacSamuel/pocoloco/internal/body"
 	"github.com/JIsaacSamuel/pocoloco/internal/header"
 	"github.com/JIsaacSamuel/pocoloco/internal/helpers"
 	nav "github.com/JIsaacSamuel/pocoloco/pkg/navigation"
@@ -24,6 +25,7 @@ type model struct {
 	hover        int
 	table        []fs.DirEntry
 	search_query string
+	win_index    int
 }
 
 func (m model) Init() tea.Cmd { return nil }
@@ -52,10 +54,11 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 		case "backspace":
-			m.search_query = m.search_query[0 : len(m.search_query)-1]
+			if len(m.search_query) > 0 {
+				m.search_query = m.search_query[0 : len(m.search_query)-1]
+			}
 
 		case "ctrl+z":
-			m.Update(tea.ClearScreen())
 			helpers.Go_to("..")
 			m.table = nav.Get_dirs()
 			m.hover = 0
@@ -100,28 +103,7 @@ func (m model) View() string {
 	searchBar := searchQueryStyle.Render(m.search_query)
 	searchBar += "\n"
 
-	var s string
-	pointer := ""
-	style := textStyle
-
-	if len(m.table) == 0 {
-		s += fmt.Sprintf("%s %s\n", "!!", "This directory is empty.")
-	}
-
-	for i := 0; i < len(m.table); i++ {
-		if i == m.hover {
-			style = baseStyle
-			if m.table[i].IsDir() == false {
-				pointer = "x"
-			} else {
-				pointer = ">"
-			}
-		} else {
-			pointer = " "
-			style = textStyle
-		}
-		s += fmt.Sprintf("%s %s\n", pointer, style.Render(m.table[i].Name()))
-	}
+	s := body.Body(m.table, m.hover, m.win_index)
 
 	return head + searchBar + s
 }
@@ -131,6 +113,7 @@ func initialModel() *model {
 		hover:        0,
 		table:        nav.Get_dirs(),
 		search_query: "",
+		win_index:    0,
 	}
 }
 
