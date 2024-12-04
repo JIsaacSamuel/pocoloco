@@ -25,7 +25,6 @@ type model struct {
 	hover        int
 	table        []fs.DirEntry
 	search_query string
-	win_index    int
 }
 
 func (m model) Init() tea.Cmd { return nil }
@@ -103,7 +102,7 @@ func (m model) View() string {
 	searchBar := searchQueryStyle.Render(m.search_query)
 	searchBar += "\n"
 
-	s := body.Body(m.table, m.hover, m.win_index)
+	s := body.Body(m.table, m.hover, 0)
 
 	return head + searchBar + s
 }
@@ -113,7 +112,6 @@ func initialModel() *model {
 		hover:        0,
 		table:        nav.Get_dirs(),
 		search_query: "",
-		win_index:    0,
 	}
 }
 

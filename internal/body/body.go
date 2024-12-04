@@ -5,7 +5,20 @@ import (
 	"io/fs"
 
 	"github.com/charmbracelet/lipgloss"
+	"golang.org/x/sys/unix"
 )
+
+func getTerminalSize() (int, int, error) {
+	var ws *unix.Winsize
+
+	// Use ioctl syscall to get terminal window size
+	ws, err := unix.IoctlGetWinsize(0, unix.TIOCGWINSZ)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return int(ws.Row), int(ws.Col), nil
+}
 
 var (
 	textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("231"))
@@ -51,7 +64,7 @@ func Body(table []fs.DirEntry, hover, index int) string {
 		prefix = "...\n"
 	}
 
-	if index+9 == len(table)-1 {
+	if index+9 >= len(table)-1 {
 		suffix = "-- End --"
 	} else {
 		suffix = "..."
