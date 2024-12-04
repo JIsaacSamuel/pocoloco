@@ -17,10 +17,6 @@ var searchQueryStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("99"))
 
 var textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("231"))
 
-var baseStyle = lipgloss.NewStyle().
-	Bold(true).
-	Foreground(lipgloss.Color("46"))
-
 type model struct {
 	hover        int
 	table        []fs.DirEntry
@@ -67,7 +63,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.hover >= 0 {
 				m.search_query = ""
 
-				if m.table[m.hover].IsDir() == false {
+				if !m.table[m.hover].IsDir() {
 					helpers.Open_nano(m.table[m.hover].Name())
 					return m, tea.ClearScreen
 				}
@@ -99,7 +95,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	head := header.Get_header()
 
-	searchBar := searchQueryStyle.Render(m.search_query)
+	searchBar := textStyle.Render("Type to search: ") + searchQueryStyle.Render(m.search_query)
 	searchBar += "\n"
 
 	s := body.Body(m.table, m.hover, 0)
