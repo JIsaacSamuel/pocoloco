@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func Go_to(dir_name string) error {
@@ -23,8 +24,6 @@ func Start_coding() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return
 }
 
 func Open_nano(file_name string) {
@@ -38,14 +37,13 @@ func Open_nano(file_name string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	return
 }
 
 func Filer_files(list []fs.DirEntry, param string) []fs.DirEntry {
 	var result []fs.DirEntry
+	param = strings.ToLower(param)
 	for i := 0; i < len(list); i++ {
-		if param == list[i].Name()[:min(len(param), len(list[i].Name()))] {
+		if param == strings.ToLower(list[i].Name()[:min(len(param), len(list[i].Name()))]) {
 			result = append(result, list[i])
 		}
 	}

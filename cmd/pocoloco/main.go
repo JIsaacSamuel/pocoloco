@@ -20,6 +20,7 @@ var textStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("231"))
 type model struct {
 	hover        int
 	table        []fs.DirEntry
+	full_table   []fs.DirEntry
 	search_query string
 }
 
@@ -51,11 +52,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "backspace":
 			if len(m.search_query) > 0 {
 				m.search_query = m.search_query[0 : len(m.search_query)-1]
+				m.table = helpers.Filer_files(m.full_table, m.search_query)
+				m.hover = 0
 			}
 
 		case "ctrl+z":
 			helpers.Go_to("..")
-			m.table = nav.Get_dirs()
+			m.full_table = nav.Get_dirs()
+			m.table = m.full_table
 			m.hover = 0
 			m.search_query = ""
 
@@ -69,7 +73,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 
 				helpers.Go_to(m.table[m.hover].Name())
-				m.table = nav.Get_dirs()
+				m.full_table = nav.Get_dirs()
+				m.table = m.full_table
 			} else {
 				return m, nil
 			}
@@ -85,7 +90,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		default:
 			m.search_query += msg.String()
-			m.table = helpers.Filer_files(m.table, m.search_query)
+			m.table = helpers.Filer_files(m.full_table, m.search_query)
 			m.hover = 0
 		}
 	}
@@ -107,6 +112,7 @@ func initialModel() *model {
 	return &model{
 		hover:        0,
 		table:        nav.Get_dirs(),
+		full_table:   nav.Get_dirs(),
 		search_query: "",
 	}
 }
