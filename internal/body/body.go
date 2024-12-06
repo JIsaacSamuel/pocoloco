@@ -35,16 +35,16 @@ func Body(table []fs.DirEntry, hover, index int) string {
 	var style lipgloss.Style
 
 	lines, err := getTerminalSize()
-	if err != nil || lines-12 <= 0 {
+	if err != nil || lines-13 <= 0 {
 		lines = 10
 	} else {
-		lines -= 12
+		lines -= 13
 	}
 
 	pointer := ""
 
 	if len(table) == 0 {
-		s += fmt.Sprintf("%s %s\n", "!!", "This directory is empty.")
+		s += fmt.Sprintf("%s %s\n", "!!", "Nothing matches your search.")
 	}
 
 	if hover > index+(lines) {
@@ -73,9 +73,9 @@ func Body(table []fs.DirEntry, hover, index int) string {
 	}
 
 	if index+lines >= len(table)-1 {
-		suffix = "-- End --"
+		suffix = "-- End --\n"
 	} else {
-		suffix = "..."
+		suffix = "...\n "
 	}
 
 	return prefix + s + suffix

@@ -1,11 +1,18 @@
 # Pocoloco
 
-Pocoloco is a terminal-based application built in Go using the [Bubble Tea](https://github.com/charmbracelet/bubbletea) package for creating modern, intuitive terminal user interfaces. This project aims to streamline file navigation and editing directly within the terminal.
+Pocoloco is a terminal-based application built in Go using the [Bubble Tea](https://github.com/charmbracelet/bubbletea) package for easier navigation of terminal.
 
 ## Features
 - **File Navigation:** Navigate through directories using intuitive keyboard shortcuts.
 - **File Editing:** Open and edit files with `nano` directly from the terminal.
 - **Search and Filter:** Search and filter files dynamically as you type.
+
+## Pre-requisites
+- Make sure you are on linux or desbian based system. This files does not run on Windows, however is compatible with WSL.
+- Make sure you have the `Xlib.h` along with `nano` and `code`
+- You can download `Xlib.h` by running the following command:
+  ```bash
+  sudo apt install libx11-dev
 
 ## Installation
 1. Clone the repository:
@@ -34,7 +41,7 @@ This will open the command in an alternate buffer screen within the terminal. If
 |---------------|---------------------------------------------------|
 | `up`          | Move the selection cursor up in the list.         |
 | `down`        | Move the selection cursor down in the list.       |
-| `ctrl+c`      | Clear the screen and quit the application.        |
+| `ctrl+c`      | Copy the path of current directory and close the application. |
 | `esc`         | Clear the screen and quit the application.        |
 | `enter`       | Open the selected file or directory.              |
 | `ctrl+z`      | Navigate to the parent directory.                 |

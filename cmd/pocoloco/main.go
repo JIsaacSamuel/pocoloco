@@ -6,11 +6,13 @@ import (
 	"os"
 
 	"github.com/JIsaacSamuel/pocoloco/internal/body"
+	"github.com/JIsaacSamuel/pocoloco/internal/footer"
 	"github.com/JIsaacSamuel/pocoloco/internal/header"
 	"github.com/JIsaacSamuel/pocoloco/internal/helpers"
 	nav "github.com/JIsaacSamuel/pocoloco/pkg/navigation"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"golang.design/x/clipboard"
 )
 
 var searchQueryStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("99"))
@@ -33,6 +35,12 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			m.Update(tea.ClearScreen())
+			err := clipboard.Init()
+			if err != nil {
+				panic(err)
+			}
+
+			clipboard.Write(clipboard.FmtText, []byte(helpers.Curr_dir()))
 			return m, tea.Quit
 
 		case "up":
@@ -105,7 +113,9 @@ func (m model) View() string {
 
 	s := body.Body(m.table, m.hover, 0)
 
-	return head + searchBar + s
+	footer := footer.Footer()
+
+	return head + footer + searchBar + s
 }
 
 func initialModel() *model {

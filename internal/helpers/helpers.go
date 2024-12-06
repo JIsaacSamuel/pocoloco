@@ -39,6 +39,16 @@ func Open_nano(file_name string) {
 	}
 }
 
+func Curr_dir() string {
+	res, err := os.Getwd()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return res
+}
+
 func Filer_files(list []fs.DirEntry, param string) []fs.DirEntry {
 	var result []fs.DirEntry
 	param = strings.ToLower(param)
