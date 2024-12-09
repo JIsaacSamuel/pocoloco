@@ -9,10 +9,10 @@ Pocoloco is a terminal-based application built in Go using the [Bubble Tea](http
 
 ## Pre-requisites
 - Make sure you are on linux or desbian based system. This files does not run on Windows, however is compatible with WSL.
-- Make sure you have the `Xlib.h` along with `nano` and `code`
-- You can download `Xlib.h` by running the following command:
+- Make sure you have the `xclip` along with `nano` and `code`
+- You can download `xclip` by running the following command:
   ```bash
-  sudo apt install libx11-dev
+  sudo apt-get install xclip
 
 ## Installation
 1. Clone the repository:
