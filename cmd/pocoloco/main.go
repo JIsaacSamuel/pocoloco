@@ -12,7 +12,6 @@ import (
 	nav "github.com/JIsaacSamuel/pocoloco/pkg/navigation"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"golang.design/x/clipboard"
 )
 
 var searchQueryStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("99"))
@@ -35,12 +34,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			m.Update(tea.ClearScreen())
-			err := clipboard.Init()
-			if err != nil {
-				panic(err)
-			}
-
-			clipboard.Write(clipboard.FmtText, []byte(helpers.Curr_dir()))
+			helpers.Copy_to_clip()
 			return m, tea.Quit
 
 		case "up":

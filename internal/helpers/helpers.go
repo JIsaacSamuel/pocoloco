@@ -49,6 +49,20 @@ func Curr_dir() string {
 	return res
 }
 
+func Copy_to_clip() {
+	cwd := Curr_dir()
+
+	cmd := exec.Command("xclip", "-selection", "clipboard")
+	cmd.Stdin = strings.NewReader(cwd)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func Filer_files(list []fs.DirEntry, param string) []fs.DirEntry {
 	var result []fs.DirEntry
 	param = strings.ToLower(param)
